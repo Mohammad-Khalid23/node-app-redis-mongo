@@ -1,0 +1,51 @@
+version: "3"
+services:
+   api:
+       build:
+           context: .
+       environment:
+           - NODE_ENV=development'
+           - staging=true
+           - PORT=3000
+       command: npm run dev
+       ports:
+           - 3000:3000
+       networks:
+           - dev-network
+       links:
+           - mongo
+       depends_on:
+           - mongo
+           - redis
+   mongo:
+       image: mongo:latest
+       environment:
+           - MONGO_DATA_DIR=/data/db
+           - MONGO_LOG_DIR=/dev/null
+       volumes:
+           - ${DATA}/MongoDB/data:/data/db
+       ports:
+           - 27017:27017
+       networks:
+           - dev-network
+   redis:
+       image: "redis:latest"
+       ports:
+           - 6379:6379
+       hostname : redis
+       volumes:
+           - ./redis-data:/data
+       networks:
+           - dev-network
+#    postgresDB:
+#          image: postgres
+#          ports:
+#           - 5432:5432
+ 
+
+volumes:
+   esdata1:
+       driver: local
+networks:
+   dev-network:
+       driver: bridge
